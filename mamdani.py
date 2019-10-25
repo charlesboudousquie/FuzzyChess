@@ -1,14 +1,5 @@
-from typing import Tuple,List,Callable
-
-
-class Function():
-    def __init__(self, f : Callable[[float],float], lower_bound : float, upper_bound : float):
-        self.f = f
-        self.lower_bound = lower_bound
-        self.upper_bound = upper_bound
-
-    def  __call__(self, x):
-        return self.f(x)
+from typing import List
+from fuzzy_number import *
 
 
 
@@ -40,8 +31,6 @@ class Mamdani():
 
         return sum_b_prime_times_y / sum_b_prime
 
-def Triangular(a,b,c):
-    return lambda x: (x-a)/(b-a) if a<x and x<=b else (c-x)/(c-b) if b<x and x<=c else 0
 
 
 if __name__ == '__main__':
@@ -51,8 +40,8 @@ if __name__ == '__main__':
     b1 = Triangular(20,25,35)
     b2 = Triangular(30,35,40)
 
-    inputs = [Function(a1,2,4), Function(a2,3,7)]
-    outputs = [Function(b1,20,35), Function(b2,30,40)]
+    inputs = [a1, a2]
+    outputs = [b1, b2]
 
     m = Mamdani(inputs, outputs)
 
