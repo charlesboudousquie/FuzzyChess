@@ -2,19 +2,71 @@
 import math
 
 import chess
-import chess.engine
+import chess.variant
+#import chess.engine
 
 max_depth = 4
 
-global_engine = chess.engine.SimpleEngine.popen_uci("stockfish_10_x64")
-
 global_iteration_count = 0
 
+PawnVal = 100
+KnightVal = 350
+BishopVal = 525
+RookVal = 525
+QueenVal = 1000
+KingVal = 10000
 
-def evaluate(board_state):
-    result = global_engine.analyse(board_state, chess.engine.Limit(depth=4), info=chess.engine.Info.SCORE)
-    # get("score") returns PovScore
-    return result.get("score").pov(chess.WHITE).score()
+globalBoard = chess.Board()
+
+
+# this function merely calculates the material advantage of white over black
+def diff_pieces(board_state: chess.Board):
+    # get pieces of white and subtract them from black
+    white_pawns = len(board_state.pieces(chess.PAWN, chess.WHITE))
+    white_knights = len(board_state.pieces(chess.KNIGHT, chess.WHITE))
+    white_bishops = len(board_state.pieces(chess.BISHOP, chess.WHITE))
+    white_rooks = len(board_state.pieces(chess.ROOK, chess.WHITE))
+    white_king = len(board_state.pieces(chess.KING, chess.WHITE))
+    white_queen = len(board_state.pieces(chess.QUEEN, chess.WHITE))
+
+    black_pawns = len(board_state.pieces(chess.PAWN, chess.BLACK))
+    black_knights = len(board_state.pieces(chess.KNIGHT, chess.BLACK))
+    black_bishops = len(board_state.pieces(chess.BISHOP, chess.BLACK))
+    black_rooks = len(board_state.pieces(chess.ROOK, chess.BLACK))
+    black_king = len(board_state.pieces(chess.KING, chess.BLACK))
+    black_queen = len(board_state.pieces(chess.QUEEN, chess.BLACK))
+
+    material_value = PawnVal * (white_pawns - black_pawns) \
+                     + KnightVal * (white_knights - black_knights) \
+                     + BishopVal * (white_bishops - black_bishops)\
+                     + RookVal * (white_rooks - black_rooks)\
+                     + QueenVal * (white_queen - black_queen)\
+                     + KingVal * (white_king - black_king)
+
+    return material_value
+
+
+def evaluate(board: chess.Board):
+
+    # for every piece that is still alive award player 100 points
+    result = board.legal_moves.count() * 100
+
+    # being in check usually means we are going the wrong route
+    if board.is_check():
+        result -= 1000
+
+    if board.has_insufficient_material(chess.WHITE):
+        result -= 1000
+
+    # add material advantage that white has
+    result += diff_pieces(board)
+
+    # if on white then return as normal since white Maximizes
+    if board.turn is chess.WHITE:
+        return result
+    # if black then negate for minimization
+    else:
+        return -result
 
 
 def alpha_beta_prune(board):
@@ -65,7 +117,7 @@ def ab_prune(board, depth, alpha, beta, maximizing):
                 break  # sub tree pruned
 
         # return largest value from child nodes
-        return max_evaluation;
+        return max_evaluation
 
     # else if finding the min of the maximums
     # (was there something in class that talked about this?)
@@ -99,11 +151,11 @@ def ab_prune(board, depth, alpha, beta, maximizing):
                 # prune tree
                 break
         # return smallest value of child nodes.
-        return min_eval;
+        return min_eval
 
 
-#test_board = chess.Board()
+test_board = chess.Board()
 
 # test function
-#print(alpha_beta_prune(test_board))
+print(" Overall Score of board situation: ", alpha_beta_prune(test_board))
 
