@@ -11,4 +11,4 @@ class Function():
 
 
 def Triangular(a,b,c):
-    return Function(lambda x: (x-a)/(b-a) if a<x and x<=b else (c-x)/(c-b) if b<x and x<=c else 0,a,c)
+    return Function(lambda x: 1 if x==b else (x-a)/(b-a) if a<x and x<=b else (c-x)/(c-b) if b<x and x<=c else 0,a,c)
