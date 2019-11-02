@@ -1,6 +1,6 @@
 
 import math
-
+from typing import Callable
 import chess
 import chess.variant
 #import chess.engine
@@ -46,8 +46,33 @@ def diff_pieces(board_state: chess.Board):
     return material_value
 
 
-def evaluate(board: chess.Board):
+def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
+    player = board.turn
+    opponent = chess.WHITE if player == chess.BLACK else chess.BLACK
 
+    total = 0
+
+    num_moves_by_piece = {}
+
+    for move in board.legal_moves:
+        if move.from_square in num_moves_by_piece:
+            num_moves_by_piece[move] += 1
+        else:
+            num_moves_by_piece[move] = 0
+
+    for piece_type in [board.pieces(i, player) for i in range(1, 7)]:
+        num_attacking = 0
+        for piece in piece_type:
+            movable_spaces = num_moves_by_piece[piece] if piece in num_moves_by_piece else 0
+            for spot in board.attacks(piece):
+                attacked_player = board.color_at(spot)
+                if attacked_player == opponent:
+                    num_attacking += 1
+            print(f'evaluator({movable_spaces}, {num_attacking})')
+            total += evaluator(movable_spaces, num_attacking)
+
+
+def evaluate(board: chess.Board, evaluator: Callable[[float,float,float],float]):
     # for every piece that is still alive award player 100 points
     result = board.legal_moves.count() * 100
 
@@ -69,19 +94,34 @@ def evaluate(board: chess.Board):
         return -result
 
 
-def alpha_beta_prune(board):
-    # run recursive function
-    return ab_prune(board, 0, -math.inf, math.inf, True)
+def alpha_beta_prune(board, evaluator):
+    maximum_score = 0
+
+    # best so far
+    bsf = None
+
+    for move in board.legal_moves:
+        board.push(move)
+        # run recursive function
+        score = ab_prune(board, 0, -math.inf, math.inf, True, evaluator)
+        if score > maximum_score:
+            maximum_score = score
+            bsf = move
+        board.pop()
+        print('.', end = '')
+    print('\n')
+
+    return bsf
 
 
-def ab_prune(board, depth, alpha, beta, maximizing):
-    global global_iteration_count
-    global_iteration_count += 1
-    print(global_iteration_count)
+def ab_prune(board, depth, alpha, beta, maximizing, evaluator):
+    #global global_iteration_count
+    #global_iteration_count += 1
+    #print(global_iteration_count)
 
     # base case
     if depth == max_depth or board.is_game_over():
-        return evaluate(board)
+        return evaluateFuzzy(board,evaluator)
 
     # if finding the "max of the mins"
     # this sounds similar to Mamdani B'(y) = max (A_i(x_0) ^ Bi(y))
@@ -95,7 +135,7 @@ def ab_prune(board, depth, alpha, beta, maximizing):
             board.push(move)
 
             # evaluate child branch
-            evaluation = ab_prune(board, depth + 1, alpha, beta, False)
+            evaluation = ab_prune(board, depth + 1, alpha, beta, False, evaluator)
 
             # undo move
             board.pop()
@@ -131,7 +171,7 @@ def ab_prune(board, depth, alpha, beta, maximizing):
             board.push(move)
 
             # call maximization on child node
-            evaluation = ab_prune(board, depth + 1, alpha, beta, True)
+            evaluation = ab_prune(board, depth + 1, alpha, beta, True, evaluator)
 
             # undo move
             board.pop()
@@ -154,8 +194,8 @@ def ab_prune(board, depth, alpha, beta, maximizing):
         return min_eval
 
 
-test_board = chess.Board()
-
-# test function
-print(" Overall Score of board situation: ", alpha_beta_prune(test_board))
+if __name__ == '__main__':
+    test_board = chess.Board()
+    # test function
+    print(" Overall Score of board situation: ", alpha_beta_prune(test_board))
 

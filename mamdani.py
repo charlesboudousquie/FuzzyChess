@@ -39,11 +39,13 @@ class Mamdani():
         for i in range(len(self.inputs[0])):
 
             # min the truth of each rule together
-            firing_level = 1
+            firing_level = 1.0
             for xn, input in zip(x, self.inputs):
                 firing_level = min(firing_level, input[i](xn))
 
             firing_levels.append(firing_level)
+
+        print(f'Firing levels: {firing_levels}')
 
         #cog:
         y = self.outputs[0].lower_bound
@@ -59,7 +61,8 @@ class Mamdani():
             sum_b_prime += B_prime
             y += delta
 
-        return sum_b_prime_times_y / sum_b_prime
+        print(sum_b_prime_times_y / sum_b_prime if sum_b_prime else 'AGH!')
+        return sum_b_prime_times_y / sum_b_prime if sum_b_prime else 0.0
 
 
 

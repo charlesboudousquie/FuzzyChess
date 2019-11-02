@@ -54,13 +54,16 @@ class TakagiSugeno:
         alphas = []
         outputs = []
 
-        for rule, x in zip(self.rules, crisp):
-            a, o = rule(x)
+        for rule in self.rules:
+            a, o = rule(crisp)
             alphas.append(a)
             outputs.append(o)
 
         result = self.weighted_average(alphas, outputs)
         return result
+
+    def __call__(self, *crisp):
+        return(self.evaluate(crisp))
 
     def weighted_average(self, alpha, outputs):
         result = 0
@@ -78,7 +81,7 @@ class TakagiSugeno:
         return result
 
 # Test function to debug TS system
-def ts_test():
+if __name__ == '__main__':
     tri = fn.Triangular(1, 3, 5)
     a = []
     a.append(tri)
@@ -94,7 +97,7 @@ def ts_test():
     c2 = Consequence([2, 4, 5])
     r2 = Rule(a2, c2)
     system = TakagiSugeno([r, r2])
-    crisp = [[4.5, 3.5],[12, 13]]
+    crisp = [4.5, 3.5]
     value = system.evaluate(crisp)
     print(value)
 
