@@ -116,6 +116,8 @@ def alpha_beta_prune(board, evaluator, maximizing):
 
     if maximizing:
         for move in board.legal_moves:
+            if bsf is None:
+                bsf = move
             board.push(move)
             # run recursive function
             score = ab_prune(board, 0, -math.inf, math.inf, True, evaluator)
@@ -127,6 +129,8 @@ def alpha_beta_prune(board, evaluator, maximizing):
         print('\n')
     else:
         for move in board.legal_moves:
+            if wsf is None:
+                wsf = move
             board.push(move)
             # run recursive function
             score = ab_prune(board, 0, math.inf, -1 * math.inf, False, evaluator)

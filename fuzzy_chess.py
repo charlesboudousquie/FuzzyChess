@@ -48,11 +48,7 @@ def play(fuzzy_evaluator):
             print('Game Over! Stalemate!')
             return 0
 
-        # if it is player's turn then ai will want to start minimizing
-        if player_is_bad_at_picking_a_move:
-            board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, False))
-        else:
-            board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, True))
+        board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, True))
 
 
 
@@ -111,7 +107,7 @@ def main():
         ts.Rule([movable_low, attack_low], ts.Consequence([1, 2, 5]))
     ])
 
-    result = system(10,2)
+    result = system(10,3)
     print(f'RESULT: {result}')
     play(system)
     #ab.evaluate2(chess.Board("r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"),1)

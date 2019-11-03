@@ -10,5 +10,21 @@ class Function():
         return self.f(x)
 
 
-def Triangular(a,b,c):
-    return Function(lambda x: 1 if x==b else (x-a)/(b-a) if a<x and x<=b else (c-x)/(c-b) if b<x and x<=c else 0,a,c)
+class Triangular:
+    def __init__(self,a,b,c):
+        self.a = a
+        self.b = b
+        self.c = c
+        self.lower_bound = a
+        self.upper_bound = c
+
+    def __call__(self, x: float) -> float:
+        if x == self.b:
+            return 1.0
+        elif self.a < x and x < self.b:
+            return float(x-self.a)/float(self.b-self.a)
+        elif self.b < x and x < self.c:
+            return float(self.c-x)/float(self.c-self.b)
+        else:
+            return 0.0
+
