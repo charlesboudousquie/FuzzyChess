@@ -11,10 +11,11 @@ def play(fuzzy_evaluator):
 
     while True:
 
-        print('_______________')
+        print('A B C D E F G H')
+        print('---------------')
         print(board)
-
-        print('_______________')
+        print('---------------')
+        print('A B C D E F G H')
         if board.is_checkmate():
             print('Game Over! You Lose!')
             return 0
@@ -32,13 +33,14 @@ def play(fuzzy_evaluator):
                     return 1
                 board.push(chess.Move.from_uci(player_move))
                 player_is_bad_at_picking_a_move = False
-            except AttributeError:
+            except:
                 print(f'"{player_move}" is not a valid move; try again.')
 
-        print('_______________')
+        print('A B C D E F G H')
+        print('---------------')
         print(board)
-
-        print('_______________')
+        print('---------------')
+        print('A B C D E F G H')
         if board.is_checkmate():
             print('Game Over! You Win!')
             return -1
@@ -46,7 +48,9 @@ def play(fuzzy_evaluator):
             print('Game Over! Stalemate!')
             return 0
 
-        board.push(ab.alpha_beta_prune(board, fuzzy_evaluator))
+        board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, Maximizing=False))
+
+
 
 
 def main():
@@ -92,10 +96,10 @@ def main():
     system = m.Mamdani(
         inputs=[movable_spaces,num_attacking],
         outputs=position,
-        delta=0.2
+        delta=0.01
     )
 
-    system = ts.TakagiSugeno([
+    system2 = ts.TakagiSugeno([
         ts.Rule([movable_high, attack_high], ts.Consequence([3, 4, 7])),
         ts.Rule([movable_mid, attack_mid], ts.Consequence([2, 3, 6])),
         ts.Rule([movable_low, attack_low], ts.Consequence([1, 2, 5]))

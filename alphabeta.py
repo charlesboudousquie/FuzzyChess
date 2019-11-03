@@ -47,10 +47,19 @@ def diff_pieces(board_state: chess.Board):
 
 
 def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
-    player = board.turn
+    player = chess.WHITE
     opponent = chess.WHITE if player == chess.BLACK else chess.BLACK
 
     total = 0
+    # being in check usually means we are going the wrong route
+    if board.is_check():
+        total -= 1000
+
+    if board.has_insufficient_material(player):
+        total -= 1000
+
+    if board.has_insufficient_material(opponent):
+        total += 1000
 
     num_moves_by_piece = {}
 
@@ -58,7 +67,7 @@ def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
         if move.from_square in num_moves_by_piece:
             num_moves_by_piece[move] += 1
         else:
-            num_moves_by_piece[move] = 0
+            num_moves_by_piece[move] = 1
 
     for piece_type in [board.pieces(i, player) for i in range(1, 7)]:
         num_attacking = 0
@@ -68,8 +77,9 @@ def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
                 attacked_player = board.color_at(spot)
                 if attacked_player == opponent:
                     num_attacking += 1
-            print(f'evaluator({movable_spaces}, {num_attacking})')
+            #print(f'evaluator({movable_spaces}, {num_attacking})')
             total += evaluator(movable_spaces, num_attacking)
+    return total
 
 
 def evaluate(board: chess.Board, evaluator: Callable[[float,float,float],float]):
