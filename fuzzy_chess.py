@@ -83,17 +83,19 @@ def main():
 
     movable_spaces = [
         movable_high,
-        #movable_mid,
+        movable_mid,
         movable_low
     ]
 
     num_attacking = [
         attack_high,
+        attack_mid,
         attack_low
     ]
 
     position = [
         good,
+        ok,
         bad
     ]
 

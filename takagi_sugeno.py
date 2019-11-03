@@ -90,19 +90,19 @@ if __name__ == '__main__':
     tri = fn.Triangular(1, 3, 5)
     a = []
     a.append(tri)
-    tri2 = fn.Triangular(3, 6, 9)
+    tri2 = fn.Triangular(5, 10, 15)
     a.append(tri2)
-    c = Consequence([3, 6, 5])
+    c = Consequence([3, 5, 6])
     r = Rule(a, c)
     a2 = []
-    tri3 = fn.Triangular(5, 10, 15)
+    tri3 = fn.Triangular(2, 4, 5)
     a2.append(tri3)
     tri4 = fn.Triangular(10, 15, 20)
     a2.append(tri4)
     c2 = Consequence([2, 4, 5])
     r2 = Rule(a2, c2)
     system = TakagiSugeno([r, r2])
-    crisp = [4.5, 3.5]
+    crisp = [4.5, 12]
     value = system.evaluate(crisp)
     print(value)
 
