@@ -48,7 +48,11 @@ def play(fuzzy_evaluator):
             print('Game Over! Stalemate!')
             return 0
 
-        board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, Maximizing=False))
+        # if it is player's turn then ai will want to start minimizing
+        if player_is_bad_at_picking_a_move:
+            board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, False))
+        else:
+            board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, True))
 
 
 

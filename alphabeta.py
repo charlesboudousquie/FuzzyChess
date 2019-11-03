@@ -104,24 +104,43 @@ def evaluate(board: chess.Board, evaluator: Callable[[float,float,float],float])
         return -result
 
 
-def alpha_beta_prune(board, evaluator):
+def alpha_beta_prune(board, evaluator, maximizing):
     maximum_score = 0
+    minimum_score = math.inf
 
     # best so far
     bsf = None
 
-    for move in board.legal_moves:
-        board.push(move)
-        # run recursive function
-        score = ab_prune(board, 0, -math.inf, math.inf, True, evaluator)
-        if score > maximum_score:
-            maximum_score = score
-            bsf = move
-        board.pop()
-        print('.', end = '')
-    print('\n')
+    # worst move possible
+    wsf = None
 
-    return bsf
+    if maximizing:
+        for move in board.legal_moves:
+            board.push(move)
+            # run recursive function
+            score = ab_prune(board, 0, -math.inf, math.inf, True, evaluator)
+            if score > maximum_score:
+                maximum_score = score
+                bsf = move
+            board.pop()
+            print('.', end = '')
+        print('\n')
+    else:
+        for move in board.legal_moves:
+            board.push(move)
+            # run recursive function
+            score = ab_prune(board, 0, math.inf, -1 * math.inf, False, evaluator)
+            if score < minimum_score:
+                minimum_score = score
+                wsf = move
+            board.pop()
+            print('.', end = '')
+        print('\n')
+
+    if maximizing:
+        return bsf
+    else:
+        return wsf
 
 
 def ab_prune(board, depth, alpha, beta, maximizing, evaluator):
