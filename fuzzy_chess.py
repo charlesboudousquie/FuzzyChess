@@ -75,27 +75,29 @@ def main():
 
     movable_spaces = [
         movable_high,
-        #movable_mid,
+        movable_mid,
         movable_low
     ]
 
     num_attacking = [
         attack_high,
+        attack_mid,
         attack_low
     ]
 
     position = [
         good,
+        ok,
         bad
     ]
 
     system = m.Mamdani(
         inputs=[movable_spaces,num_attacking],
         outputs=position,
-        delta=0.2
+        delta=0.01
     )
 
-    system = ts.TakagiSugeno([
+    system2 = ts.TakagiSugeno([
         ts.Rule([movable_high, attack_high], ts.Consequence([3, 4, 7])),
         ts.Rule([movable_mid, attack_mid], ts.Consequence([2, 3, 6])),
         ts.Rule([movable_low, attack_low], ts.Consequence([1, 2, 5]))
