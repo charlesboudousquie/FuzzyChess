@@ -59,11 +59,15 @@ def main():
     :return:
     """
 
-    movable_high = Triangular(0,26,27)
-    movable_low = Triangular(0,1,27)
+    movable_high = Triangular(13,20,27)
+    #movable_high = Triangular(0,27,27)
+    movable_mid = Triangular(6,13,20)
+    movable_low = Triangular(0,6,13)
+    #movable_low = Triangular(0,0,27)
 
-    attack_high = Triangular(0,7,8)
-    attack_low = Triangular(0,1,8)
+    attack_high = Triangular(4,6,8)
+    attack_mid = Triangular(2,4,6)
+    attack_low = Triangular(0,2,4)
 
     good = Triangular(.5, .75, 1.)
     ok = Triangular(.25, .5, .75)
@@ -71,6 +75,7 @@ def main():
 
     movable_spaces = [
         movable_high,
+        #movable_mid,
         movable_low
     ]
 
@@ -91,12 +96,14 @@ def main():
     )
 
     system = ts.TakagiSugeno([
-        ts.Rule([movable_high, attack_high], ts.Consequence([1, 2, 5]))
+        ts.Rule([movable_high, attack_high], ts.Consequence([3, 4, 7])),
+        ts.Rule([movable_mid, attack_mid], ts.Consequence([2, 3, 6])),
+        ts.Rule([movable_low, attack_low], ts.Consequence([1, 2, 5]))
     ])
 
-    result = system(0,2)
+    result = system(10,2)
     print(f'RESULT: {result}')
-    #play(system)
+    play(system)
     #ab.evaluate2(chess.Board("r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"),1)
 
 

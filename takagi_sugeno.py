@@ -17,10 +17,10 @@ class Consequence:
         # for multiple antecedents
         for x, a in zip(inputs, self.line):
             result += x * a
-            print(result)
+            #print("result: ", result)
         
         result += self.line[-1]
-        print("consequence:", result)
+        #print("consequence:", result)
         return result
 
 
@@ -34,14 +34,16 @@ class Rule:
         # call antecedent with crisp to get firing level
         alpha = self.firing_levels(crisp)
         indiv = self.consequence(crisp)
-        print("individual output:", indiv)
+        #print("individual output:", indiv)
         result = (alpha, indiv)
         return result
 
     def firing_levels(self, crisp):
         results = [a(c) for a,c in zip(self.antecedents, crisp)]
+        # maybe this is helpful (?)
+        #results = list(filter(lambda a: a != 0, results))
         result = min(results)
-        print("alpha:", result)
+        #print("alpha:", result)
         return result
 
 
@@ -70,7 +72,10 @@ class TakagiSugeno:
 
         num = 0
         denom = sum(alpha)
-       
+      
+        if denom == 0:
+            return result
+ 
         print("alphas:", alpha)
 
         for i, j in zip(alpha, outputs):
