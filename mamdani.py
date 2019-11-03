@@ -41,27 +41,36 @@ class Mamdani():
             # min the truth of each rule together
             firing_level = 1.0
             for xn, input in zip(x, self.inputs):
-                firing_level = min(firing_level, input[i](xn))
+                val = input[i](xn)
+
+                firing_level = min(firing_level, val)
 
             firing_levels.append(firing_level)
 
-        print(f'Firing levels: {firing_levels}')
+        #print(f'Firing levels: {firing_levels}')
 
         #cog:
         y = self.outputs[0].lower_bound
-        upper_bound = self.outputs[-1].upper_bound
+        upper_bound = self.outputs[0].upper_bound
+        for consequence in self.outputs:
+            y = min(y, consequence.lower_bound)
+            upper_bound = max(upper_bound, consequence.upper_bound)
+        #print(f'Bounds: [{y:.4f},{upper_bound:.4f}]')
         delta = self.delta
+        #print(f'delta: {delta}')
         sum_b_prime_times_y = 0.0
         sum_b_prime = 0.0
         while y <= upper_bound:
             B_prime = 0
             for firing_level, B_i in zip(firing_levels, self.outputs):
-                B_prime = max(B_prime, min(firing_level, B_i(y)))
+                if firing_level:
+                    B_prime = max(B_prime, min(firing_level, B_i(y)))
             sum_b_prime_times_y += B_prime*y
             sum_b_prime += B_prime
             y += delta
 
-        print(sum_b_prime_times_y / sum_b_prime if sum_b_prime else 'AGH!')
+        if sum_b_prime == 0:
+            print('AGH!')
         return sum_b_prime_times_y / sum_b_prime if sum_b_prime else 0.0
 
 
