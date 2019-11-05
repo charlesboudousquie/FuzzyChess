@@ -62,6 +62,7 @@ class TakagiSugeno:
             outputs.append(o)
 
         result = self.weighted_average(alphas, outputs)
+        #print(f"ts result: {result}")
         return result
 
     def __call__(self, *crisp):
@@ -76,7 +77,7 @@ class TakagiSugeno:
         if denom == 0:
             return result
  
-        print("alphas:", alpha)
+        #print("alphas:", alpha)
 
         for i, j in zip(alpha, outputs):
             num += i * j

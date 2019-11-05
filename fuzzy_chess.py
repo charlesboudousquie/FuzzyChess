@@ -7,7 +7,7 @@ from fuzzy_number import Function, Triangular
 
 
 def play(fuzzy_evaluator):
-    board = chess.Board()
+    board = chess.Board("rnbqkbnr/p3pppp/2p5/1p1p4/3P4/3QP3/PPP2PPP/RNB1KBNR w KQkq - 0 4")
 
     while True:
 
@@ -109,7 +109,7 @@ def main():
 
     result = system(10,3)
     print(f'RESULT: {result}')
-    play(system)
+    play(system2)
     #ab.evaluate2(chess.Board("r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"),1)
 
 

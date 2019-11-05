@@ -5,7 +5,7 @@ import chess
 import chess.variant
 #import chess.engine
 
-max_depth = 4
+max_depth = 3
 
 global_iteration_count = 0
 
@@ -47,7 +47,7 @@ def diff_pieces(board_state: chess.Board):
 
 
 def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
-    player = chess.WHITE
+    player = chess.WHITE if board.turn == True else chess.BLACK
     opponent = chess.WHITE if player == chess.BLACK else chess.BLACK
 
     total = 0
@@ -62,23 +62,29 @@ def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
         total += 1000
 
     num_moves_by_piece = {}
-
     for move in board.legal_moves:
         if move.from_square in num_moves_by_piece:
-            num_moves_by_piece[move] += 1
+            num_moves_by_piece[move.from_square] += 1
         else:
-            num_moves_by_piece[move] = 1
+            num_moves_by_piece[move.from_square] = 1
+    
+    #print(num_moves_by_piece)
 
-    for piece_type in [board.pieces(i, player) for i in range(1, 7)]:
-        num_attacking = 0
-        for piece in piece_type:
-            movable_spaces = num_moves_by_piece[piece] if piece in num_moves_by_piece else 0
-            for spot in board.attacks(piece):
-                attacked_player = board.color_at(spot)
-                if attacked_player == opponent:
-                    num_attacking += 1
-            #print(f'evaluator({movable_spaces}, {num_attacking})')
-            total += evaluator(movable_spaces, num_attacking)
+    for i in range(1, 7):
+            piece_type = board.pieces(i, player)
+            num_attacking = 0
+            for piece in piece_type:
+                #print(f"piece: {piece}")
+                movable_spaces = num_moves_by_piece[piece] if piece in num_moves_by_piece else 0
+                #print(f"movable spaces: {movable_spaces}")
+                for spot in board.attacks(piece):
+                    attacked_player = board.color_at(spot)
+                    if attacked_player == opponent:
+                        num_attacking += 1
+                #print(f'evaluator({movable_spaces}, {num_attacking})')
+                total += i + evaluator(movable_spaces, num_attacking)
+
+    #print(f"total:{total}")
     return total
 
 
