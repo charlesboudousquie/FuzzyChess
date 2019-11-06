@@ -5,9 +5,13 @@ import chess
 import alphabeta as ab
 from fuzzy_number import Function, Triangular
 
+mam_system = None
+ts_system = None
+
 
 def play(fuzzy_evaluator):
-    board = chess.Board("rnbqkbnr/p3pppp/2p5/1p1p4/3P4/3QP3/PPP2PPP/RNB1KBNR w KQkq - 0 4")
+    #board = chess.Board("rnbqkbnr/p3pppp/2p5/1p1p4/3P4/3QP3/PPP2PPP/RNB1KBNR w KQkq - 0 4")
+    board = chess.Board()
 
     while True:
 
@@ -49,8 +53,6 @@ def play(fuzzy_evaluator):
             return 0
 
         board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, True))
-
-
 
 
 def main():
@@ -107,12 +109,10 @@ def main():
         ts.Rule([movable_low, attack_low], ts.Consequence([1, 2, 5]))
     ])
 
-    result = system(10,3)
-    print(f'RESULT: {result}')
-    play(system2)
+    #result = system(10,3)
+    #print(f'RESULT: {result}')
+    play(system)
     #ab.evaluate2(chess.Board("r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"),1)
-
-
 
 
 if __name__ == '__main__':

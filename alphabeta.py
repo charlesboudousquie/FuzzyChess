@@ -5,7 +5,7 @@ import chess
 import chess.variant
 #import chess.engine
 
-max_depth = 3
+max_depth = 4
 
 global_iteration_count = 0
 
@@ -122,6 +122,7 @@ def alpha_beta_prune(board, evaluator, maximizing):
 
     if maximizing:
         for move in board.legal_moves:
+            print('.', end = '', flush=True)
             if bsf is None:
                 bsf = move
             board.push(move)
@@ -131,10 +132,10 @@ def alpha_beta_prune(board, evaluator, maximizing):
                 maximum_score = score
                 bsf = move
             board.pop()
-            print('.', end = '')
         print('\n')
     else:
         for move in board.legal_moves:
+            print('.', end = '', flush=True)
             if wsf is None:
                 wsf = move
             board.push(move)
@@ -144,7 +145,6 @@ def alpha_beta_prune(board, evaluator, maximizing):
                 minimum_score = score
                 wsf = move
             board.pop()
-            print('.', end = '')
         print('\n')
 
     if maximizing:
