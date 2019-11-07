@@ -1,8 +1,3 @@
-"""
-    Implementation of Takagi-Sugeno fuzzy systems
-    MAT 362 A - Professor Bede
-"""
-
 import fuzzy_number as fn
 
 class Consequence:
@@ -10,17 +5,14 @@ class Consequence:
     def __init__(self, line):
         self.line = line
 
-    # inputs must be a list type of size len(constants)-1
     def __call__(self, inputs):
         result = 0
         
-        # for multiple antecedents
+        # multiple antecedents
         for x, a in zip(inputs, self.line):
             result += x * a
-            #print("result: ", result)
         
         result += self.line[-1]
-        #print("consequence:", result)
         return result
 
 
@@ -34,16 +26,12 @@ class Rule:
         # call antecedent with crisp to get firing level
         alpha = self.firing_levels(crisp)
         indiv = self.consequence(crisp)
-        #print("individual output:", indiv)
         result = (alpha, indiv)
         return result
 
     def firing_levels(self, crisp):
         results = [a(c) for a,c in zip(self.antecedents, crisp)]
-        # maybe this is helpful (?)
-        #results = list(filter(lambda a: a != 0, results))
         result = min(results)
-        #print("alpha:", result)
         return result
 
 
@@ -62,7 +50,6 @@ class TakagiSugeno:
             outputs.append(o)
 
         result = self.weighted_average(alphas, outputs)
-        #print(f"ts result: {result}")
         return result
 
     def __call__(self, *crisp):
@@ -77,8 +64,6 @@ class TakagiSugeno:
         if denom == 0:
             return result
  
-        #print("alphas:", alpha)
-
         for i, j in zip(alpha, outputs):
             num += i * j
 

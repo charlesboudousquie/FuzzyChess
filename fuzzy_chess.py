@@ -1,4 +1,3 @@
-
 import mamdani as m
 import takagi_sugeno as ts
 import chess
@@ -8,18 +7,18 @@ from fuzzy_number import Function, Triangular
 mam_system = None
 ts_system = None
 
+def print_board(board):
+        print('------AI-------')
+        print(board)
+        print('----Player-----')
+        print('A B C D E F G H\n')
 
 def play(fuzzy_evaluator):
     #board = chess.Board("rnbqkbnr/p3pppp/2p5/1p1p4/3P4/3QP3/PPP2PPP/RNB1KBNR w KQkq - 0 4")
     board = chess.Board()
 
     while True:
-
-        print('A B C D E F G H')
-        print('---------------')
-        print(board)
-        print('---------------')
-        print('A B C D E F G H')
+        print_board(board)
         if board.is_checkmate():
             print('Game Over! You Lose!')
             return 0
@@ -29,22 +28,57 @@ def play(fuzzy_evaluator):
 
         player_is_bad_at_picking_a_move = True
         while player_is_bad_at_picking_a_move:
-            print([move.uci() for move in board.legal_moves])
-            player_move = input("Your move (or 'quit'): ")
+            print("Valid moves: ", end='', flush=True)
+            
+            moves = [m.uci() for m in board.legal_moves]
+            for move in moves:
+                print(move, end=', ')
+
+            print("\n")                
+            
+            player_move = input("Your move (or 'help'): ")
+            print('\n', end='')
             try:
+                if player_move == 'help':
+                    print("----Help--------------------------------------------------")
+                    print("'help': displays this menu")
+                    print("'quit': forfeits the game")
+                    print("'reset': resets the game board")
+                    print("'mam': sets AI to use Mamdani fuzzy system")
+                    print("'ts': sets AI to use Takagi-Sugeno fuzzy sytem (default)")
+                    print("----------------------------------------------------------\n")
+                    continue
                 if player_move == 'quit':
                     print('Game Over! You Forfeit!')
                     return 1
-                board.push(chess.Move.from_uci(player_move))
+                if player_move == 'reset':
+                    board.reset()
+                    print('Resetting the game')
+                    print_board(board)
+                    continue
+                if player_move == 'mam':
+                    print('Switching to Mamdani fuzzy system.\n')
+                    print_board(board)
+                    fuzzy_evaluator = mam_system
+                    continue
+                if player_move == 'ts':
+                    print('Switching to Takagi-Sugeno fuzzy system.\n')
+                    print_board(board)
+                    fuzzy_evaluator = ts_system
+                    continue
+
+                if player_move in moves:
+                    board.push(chess.Move.from_uci(player_move))
+                else:
+                    print('Invalid move.')
+                    continue
+
                 player_is_bad_at_picking_a_move = False
             except:
                 print(f'"{player_move}" is not a valid move; try again.')
 
-        print('A B C D E F G H')
-        print('---------------')
-        print(board)
-        print('---------------')
-        print('A B C D E F G H')
+        print_board(board)
+
         if board.is_checkmate():
             print('Game Over! You Win!')
             return -1
@@ -53,7 +87,6 @@ def play(fuzzy_evaluator):
             return 0
 
         board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, True))
-
 
 def main():
     """
@@ -64,6 +97,8 @@ def main():
 
     :return:
     """
+    global mam_system
+    global ts_system
 
     movable_high = Triangular(13,20,27)
     #movable_high = Triangular(0,27,27)
@@ -97,13 +132,13 @@ def main():
         bad
     ]
 
-    system = m.Mamdani(
+    mam_system = m.Mamdani(
         inputs=[movable_spaces,num_attacking],
         outputs=position,
         delta=0.01
     )
 
-    system2 = ts.TakagiSugeno([
+    ts_system = ts.TakagiSugeno([
         ts.Rule([movable_high, attack_high], ts.Consequence([3, 4, 7])),
         ts.Rule([movable_mid, attack_mid], ts.Consequence([2, 3, 6])),
         ts.Rule([movable_low, attack_low], ts.Consequence([1, 2, 5]))
@@ -111,7 +146,7 @@ def main():
 
     #result = system(10,3)
     #print(f'RESULT: {result}')
-    play(system)
+    play(ts_system)
     #ab.evaluate2(chess.Board("r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4"),1)
 
 

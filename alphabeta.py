@@ -5,7 +5,7 @@ import chess
 import chess.variant
 #import chess.engine
 
-max_depth = 4
+max_depth = 3
 
 global_iteration_count = 0
 
@@ -68,23 +68,17 @@ def evaluateFuzzy(board: chess.Board, evaluator: Callable[[float,float],float]):
         else:
             num_moves_by_piece[move.from_square] = 1
     
-    #print(num_moves_by_piece)
-
     for i in range(1, 7):
             piece_type = board.pieces(i, player)
             num_attacking = 0
             for piece in piece_type:
-                #print(f"piece: {piece}")
                 movable_spaces = num_moves_by_piece[piece] if piece in num_moves_by_piece else 0
-                #print(f"movable spaces: {movable_spaces}")
                 for spot in board.attacks(piece):
                     attacked_player = board.color_at(spot)
                     if attacked_player == opponent:
                         num_attacking += 1
-                #print(f'evaluator({movable_spaces}, {num_attacking})')
                 total += i + evaluator(movable_spaces, num_attacking)
 
-    #print(f"total:{total}")
     return total
 
 
@@ -120,6 +114,8 @@ def alpha_beta_prune(board, evaluator, maximizing):
     # worst move possible
     wsf = None
 
+    print("Calculating", end='')
+
     if maximizing:
         for move in board.legal_moves:
             print('.', end = '', flush=True)
@@ -132,7 +128,6 @@ def alpha_beta_prune(board, evaluator, maximizing):
                 maximum_score = score
                 bsf = move
             board.pop()
-        print('\n')
     else:
         for move in board.legal_moves:
             print('.', end = '', flush=True)
@@ -145,19 +140,17 @@ def alpha_beta_prune(board, evaluator, maximizing):
                 minimum_score = score
                 wsf = move
             board.pop()
-        print('\n')
 
+    print('\n', end='')
     if maximizing:
+        print(f"AI chose {bsf.uci()}\n")
         return bsf
     else:
+        print(f"AI chose {wsf.uci()}\n")
         return wsf
 
 
 def ab_prune(board, depth, alpha, beta, maximizing, evaluator):
-    #global global_iteration_count
-    #global_iteration_count += 1
-    #print(global_iteration_count)
-
     # base case
     if depth == max_depth or board.is_game_over():
         return evaluateFuzzy(board,evaluator)
