@@ -44,6 +44,7 @@ def play(fuzzy_evaluator):
                     print("'help': displays this menu")
                     print("'quit': forfeits the game")
                     print("'reset': resets the game board")
+                    print("'undo': undoes the last move")
                     print("'mam': sets AI to use Mamdani fuzzy system")
                     print("'ts': sets AI to use Takagi-Sugeno fuzzy sytem (default)")
                     print("----------------------------------------------------------\n")
@@ -54,6 +55,12 @@ def play(fuzzy_evaluator):
                 if player_move == 'reset':
                     board.reset()
                     print('Resetting the game')
+                    print_board(board)
+                    continue
+                if player_move == 'undo':
+                    board.pop()
+                    board.pop()
+                    print('Undoing last move')
                     print_board(board)
                     continue
                 if player_move == 'mam':
@@ -68,7 +75,14 @@ def play(fuzzy_evaluator):
                     continue
 
                 if player_move in moves:
-                    board.push(chess.Move.from_uci(player_move))
+                    player_move = chess.Move.from_uci(player_move)
+                    if board.is_capture(player_move):
+                        captured = board.piece_at(player_move.to_square)
+                        print(f'captured{captured}')
+                        print('Player captured a piece!')
+                    if board.is_castling(player_move):
+                        print('Player castled!')
+                    board.push(player_move)
                 else:
                     print('Invalid move.')
                     continue
@@ -86,7 +100,15 @@ def play(fuzzy_evaluator):
             print('Game Over! Stalemate!')
             return 0
 
-        board.push(ab.alpha_beta_prune(board, fuzzy_evaluator, True))
+        computer_move = ab.alpha_beta_prune(board, fuzzy_evaluator, True)
+
+        if board.is_capture(computer_move):
+            print('AI captured a piece!')
+        if board.is_castling(computer_move):
+            print('AI castled!')
+
+        board.push(computer_move)
+
 
 def main():
     """

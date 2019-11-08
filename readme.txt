@@ -14,6 +14,7 @@ Other valid input options are:
 'help': displays the help menu
 'quit': forfeits the game
 'reset': resets the board to the start of the game
+'undo': undoes the last move
 'mam': sets AI to use a Mamdani fuzzy system
 'ts': sets AI to use a Takagi-Sugeno fuzzy system
 
